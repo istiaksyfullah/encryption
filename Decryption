@@ -1,0 +1,77 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class CaesarCipher {
+private:
+    string message;
+    int key;
+
+public:
+    CaesarCipher() {
+        message = "";
+        key = 0;
+    }
+
+    void setMessage(const string& msg) {
+        message = msg;
+    }
+
+    void setKey(int k) {
+        key = k;
+    }
+
+    string encrypt() {
+        string encryptedMessage = message;
+
+        for (int i = 0; i < encryptedMessage.length(); i++) {
+            if (isalpha(encryptedMessage[i])) {
+                if (isupper(encryptedMessage[i])) {
+                    encryptedMessage[i] = ((encryptedMessage[i] - 'A' + key) % 26) + 'A';
+                } else {
+                    encryptedMessage[i] = ((encryptedMessage[i] - 'a' + key) % 26) + 'a';
+                }
+            }
+        }
+
+        return encryptedMessage;
+    }
+
+    string decrypt() {
+        string decryptedMessage = message;
+
+        for (int i = 0; i < decryptedMessage.length(); i++) {
+            if (isalpha(decryptedMessage[i])) {
+                if (isupper(decryptedMessage[i])) {
+                    decryptedMessage[i] = ((decryptedMessage[i] - 'A' - key + 26) % 26) + 'A';
+                } else {
+                    decryptedMessage[i] = ((decryptedMessage[i] - 'a' - key + 26) % 26) + 'a';
+                }
+            }
+        }
+
+        return decryptedMessage;
+    }
+};
+
+int main() {
+    string message;
+    int key;
+
+    cout << "Enter the encrypted message to decrypt: ";
+    getline(cin, message);
+
+    cout << "Enter the decryption key (number of positions to shift each letter back): ";
+    cin >> key;
+
+    CaesarCipher cipher;
+    cipher.setMessage(message);
+    cipher.setKey(key);
+
+    string decryptedMessage = cipher.decrypt();
+
+    cout << "Decrypted message: " << decryptedMessage << endl;
+
+    return 0;
+}
