@@ -1,0 +1,61 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class CaesarCipher {
+private:
+    string message;
+    int key;
+
+public:
+    CaesarCipher() {
+        message = "";
+        key = 0;
+    }
+
+    void setMessage(const string& msg) {
+        message = msg;
+    }
+
+    void setKey(int k) {
+        key = k;
+    }
+
+    string encrypt() {
+        string encryptedMessage = message;
+
+        for (int i = 0; i < encryptedMessage.length(); i++) {
+            if (isalpha(encryptedMessage[i])) {
+                if (isupper(encryptedMessage[i])) {
+                    encryptedMessage[i] = ((encryptedMessage[i] - 'A' + key) % 26) + 'A';
+                } else {
+                    encryptedMessage[i] = ((encryptedMessage[i] - 'a' + key) % 26) + 'a';
+                }
+            }
+        }
+
+        return encryptedMessage;
+    }
+};
+
+int main() {
+    string message;
+    int key;
+
+    cout << "Enter the message to encrypt: ";
+    getline(cin, message);
+
+    cout << "Enter the encryption key (number of positions to shift each letter): ";
+    cin >> key;
+
+    CaesarCipher cipher;
+    cipher.setMessage(message);
+    cipher.setKey(key);
+
+    string encryptedMessage = cipher.encrypt();
+
+    cout << "Encrypted message: " << encryptedMessage << endl;
+
+    return 0;
+}
