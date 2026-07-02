@@ -1,6 +1,7 @@
 # ═══════════════════════════════════════════════════════════════════
 # ResNet-TSN Model for Breathing Detection
 # Temporal Segment Network with ResNet18 Backbone
+# 16 Temporal Segments for Better Motion Capture
 # ═══════════════════════════════════════════════════════════════════
 
 # ═══════════════════════════════════════════════════════════════════
@@ -62,14 +63,17 @@ print("✅ Libraries ready!")
 
 # ═══════════════════════════════════════════════════════════════════
 # Cell 3 — Dataset Class (TSN - Temporal Segment Network)
+# 16 Segments for Better Temporal Representation
 # ═══════════════════════════════════════════════════════════════════
 
 class VideoDataset(Dataset):
     """
     TSN Dataset: Samples num_segments frames uniformly across the video.
     Each frame is processed independently by ResNet18.
+    
+    16 segments provides good temporal coverage for motion analysis.
     """
-    def __init__(self, folder, label, num_segments=8, max_videos=None):
+    def __init__(self, folder, label, num_segments=16, max_videos=None):
         self.folder       = folder
         self.label        = label
         self.num_segments = num_segments
@@ -178,7 +182,7 @@ test_loader  = DataLoader(test_dataset,  batch_size=8, shuffle=False, num_worker
 
 print(f"\nTotal:{total}  Train:{train_size}  Val:{val_size}  Test:{test_size}")
 print("\n✅ USING ALL AVAILABLE VIDEOS (1,141 total)")
-print("   Temporal Segment Network: 8 segments per video")
+print("   Temporal Segment Network: 16 segments per video")
 print("   Batch size: 8")
 print("   Data loading: Single-threaded (Windows compatible)")
 
@@ -198,7 +202,7 @@ class ResNet_TSN(nn.Module):
     
     No LSTM — temporal reasoning comes from segment sampling across the video.
     """
-    def __init__(self, num_segments=8, num_classes=4):
+    def __init__(self, num_segments=16, num_classes=4):
         super(ResNet_TSN, self).__init__()
         self.num_segments = num_segments
 
@@ -232,7 +236,7 @@ class ResNet_TSN(nn.Module):
         return x
 
 
-model = ResNet_TSN(num_segments=8, num_classes=4).to(device)
+model = ResNet_TSN(num_segments=16, num_classes=4).to(device)
 
 # Freeze ResNet backbone — only classifier trains
 for param in model.backbone.parameters():
@@ -241,7 +245,7 @@ for param in model.backbone.parameters():
 trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 total_params = sum(p.numel() for p in model.parameters())
 
-print(f"Model: ResNet-TSN")
+print(f"Model: ResNet-TSN (16 segments)")
 print(f"  Total parameters: {total_params:,}")
 print(f"  Trainable parameters: {trainable_params:,}")
 print(f"  ResNet18 backbone: FROZEN")
@@ -341,7 +345,7 @@ else:
     best_val_acc = 0.0
     no_improve = 0
 
-print(f"🚀 TRAINING: ResNet-TSN | 1,141 videos | Epochs {start_epoch+1}-20 | Batch=8\n")
+print(f"🚀 TRAINING: ResNet-TSN | 1,141 videos | Epochs {start_epoch+1}-20 | Batch=8 | Segments=16\n")
 
 epochs   = 20
 patience = 7
